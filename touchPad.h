@@ -13,6 +13,7 @@
 #include <sys/socket.h>
 #include <PacketBuilder/PacketMotionBuilder.h>
 #include "PacketBuilder/PacketHeadBuilder.h"
+#include <cstdio>
 
 class PointF {
 public:

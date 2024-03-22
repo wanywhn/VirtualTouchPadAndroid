@@ -7,8 +7,9 @@ int main(int argc, char *argv[]) {
     QApplication::setApplicationName(APP_APPLICATION_NAME);
     QApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, true);
     QApplication a(argc, argv);
+
     StartScreen w;
-    w.show();
+    w.showFullScreen();
 
     return QApplication::exec();
 }

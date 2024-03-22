@@ -6,8 +6,29 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QScreen>
+#include <QJniObject>
 
 #include <PacketBuilder/PacketConfigBuilder.h>
+
+
+void keep_screen_on(bool on) {
+    QNativeInterface::QAndroidApplication::runOnAndroidMainThread([=]() {
+        QJniObject activity = QNativeInterface::QAndroidApplication::context();
+        if (activity.isValid()) {
+            QJniObject window =
+                activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
+
+            if (window.isValid()) {
+                const int FLAG_KEEP_SCREEN_ON = 128;
+                if (on) {
+                    window.callMethod<void>("addFlags", "(I)V", FLAG_KEEP_SCREEN_ON);
+                } else {
+                    window.callMethod<void>("clearFlags", "(I)V", FLAG_KEEP_SCREEN_ON);
+                }
+            }
+        }
+    }).waitForFinished();
+}
 
 StartScreen::StartScreen(QWidget *parent) :
         QStackedWidget(parent) {
@@ -45,7 +66,7 @@ void StartScreen::setupUI() {
 
     connect(touchScreenBtn, &QPushButton::clicked, [this]() {
         this->touchScreenWidget->connectToServer();
-
+        keep_screen_on(true);
         this->setCurrentWidget(this->touchScreenWidget);
     });
     connect(this->setupConnWidget, &ServerConfig::backtoStartScreen, [this, touchScreenBtn]() {
@@ -70,7 +91,9 @@ void StartScreen::setupUI() {
 void StartScreen::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Back) {
         this->touchScreenWidget->tp.disconn();
+        keep_screen_on(false);
         this->setCurrentWidget(this->mainWidget);
     }
 }
+
 

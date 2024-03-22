@@ -6,6 +6,10 @@
 
 TouchScreen::TouchScreen(QWidget *parent) : QWidget(parent) {
     setAttribute(Qt::WA_AcceptTouchEvents);
+    QPalette pal = QPalette();
+    pal.setColor(QPalette::Window, Qt::black);
+    this->setPalette(pal);
+    this->setAutoFillBackground(true);
 }
 
 bool TouchScreen::event(QEvent *event) {
